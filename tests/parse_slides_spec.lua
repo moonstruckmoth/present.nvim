@@ -23,7 +23,7 @@ describe("present.parse_slides", function()
     eq(
       {
         {
-          title = "# This is the first slide",
+          title = "This is the first slide",
           body = { "This is the body" },
           blocks = {},
         },
@@ -48,7 +48,7 @@ describe("present.parse_slides", function()
     eq(1, #results.slides)
 
     local slide = results.slides[1]
-    eq("# This is the first slide", slide.title)
+    eq("This is the first slide", slide.title)
     eq({
       "This is the body",
       "```lua",
@@ -76,15 +76,15 @@ describe("present.parse_slides", function()
     eq(3, #results.slides)
 
     local slide = results.slides[1]
-    eq("# This is the first slide", slide.title)
+    eq("This is the first slide", slide.title)
     eq({ "This is the body" }, slide.body)
 
     slide = results.slides[2]
-    eq("# This is the first slide", slide.title)
+    eq("This is the first slide", slide.title)
     eq({ "This is the body", "This is the middle line" }, slide.body)
 
     slide = results.slides[3]
-    eq("# This is the first slide", slide.title)
+    eq("This is the first slide", slide.title)
     eq({ "This is the body", "This is the middle line", "This is the final line" }, slide.body)
   end)
 

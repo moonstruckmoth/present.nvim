@@ -164,7 +164,7 @@ local parse_slides = function(lines)
     end
 
     local start_row, _, end_row, _ = node:range()
-    current_slide.title = lines[start_row + 1]
+    current_slide.title = lines[start_row + 1]:gsub("^#+ *", "")
     local codeblocks = vim
       .iter(codeblock_query:iter_captures(root, contents, start_row, end_row))
       :map(function(_, n)
@@ -318,14 +318,26 @@ M.start_presentation = function(opts)
     vim.bo[float.buf].filetype = "markdown"
   end)
 
+  local header_ns = vim.api.nvim_create_namespace("present_header")
   local set_slide_content = function(idx)
     local width = vim.o.columns
 
     local slide = state.parsed.slides[idx]
 
-    local padding = string.rep(" ", (width - #slide.title) / 2)
-    local title = padding .. slide.title
-    vim.api.nvim_buf_set_lines(state.floats.header.buf, 0, -1, false, { title })
+    local padding = math.floor((width - #slide.title) / 2)
+    local title_line = string.rep(" ", padding) .. slide.title
+    vim.api.nvim_buf_set_lines(state.floats.header.buf, 0, -1, false, { title_line })
+    vim.api.nvim_win_set_config(state.floats.header.win, {
+      relative = "editor",
+      row = 0,
+      col = 0,
+      width = width,
+      height = 1,
+    })
+    vim.api.nvim_buf_set_extmark(state.floats.header.buf, header_ns, 0, padding, {
+      end_col = padding + #slide.title,
+      hl_group = "@markup.heading.1.markdown",
+    })
     vim.api.nvim_buf_set_lines(state.floats.body.buf, 0, -1, false, slide.body)
 
     local footer = string.format("  %d / %d | %s", state.current_slide, #state.parsed.slides, state.title)
